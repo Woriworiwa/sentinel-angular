@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { WmsLayer, BBox, CRS_EPSG4326, MimeTypes, ApiType, } from '@sentinel-hub/sentinelhub-js';
 import { DomSanitizer } from '@angular/platform-browser';
-import { Layer } from '../Models/Layer';
+import { Layer } from '../models/layer';
 
 @Component({
   selector: 'app-satellite-image',
@@ -20,14 +20,14 @@ export class SatelliteImageComponent implements OnInit {
   constructor(private sanitizer: DomSanitizer) { }
 
   ngOnInit(): void {
-    this.imageUrl = this.getMapUrl(this.layersArray[0]);    
+    this.imageUrl = this.getUrl(this.layersArray[0]);    
   }  
 
   handleChange(layer: Layer){
-    this.imageUrl = this.getMapUrl(layer)
+    this.imageUrl = this.getUrl(layer)
   }  
 
-  getMapUrl(layer: Layer){
+  getUrl(layer: Layer){
     const wmslayer = this.createWmsLayer(layer.id);
 
     const bbox = new BBox(CRS_EPSG4326, 14.95, 37.7, 15.05, 37.8);
