@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { WmsLayer, BBox, CRS_EPSG4326, MimeTypes, ApiType, } from '@sentinel-hub/sentinelhub-js';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Layer } from '../models/layer';
-import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
-import {MatDatepickerInputEvent} from '@angular/material/datepicker';
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import { SentinelService } from '../services/sentinel.service';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import {FormControl} from '@angular/forms';
+import { MatButtonToggleChange } from '@angular/material/button-toggle';
 
 @Component({
   selector: 'app-satellite-image',
@@ -12,64 +14,45 @@ import {MatDatepickerInputEvent} from '@angular/material/datepicker';
 })
 
 export class SatelliteImageComponent implements OnInit {
-  imageUrl: string = '';     
-  
+  imageUrl: string = '';
+
   startDate: Date = new Date(Date.UTC(2018, 11 - 1, 22, 0, 0, 0));
-  endDate: Date = new Date(Date.UTC(2018, 12 - 1, 22, 23, 59, 59));  
-  
+  endDate: Date = new Date(Date.UTC(2018, 12 - 1, 22, 23, 59, 59));
+
   availableLayers: Layer[] = [
-    {id: 'TRUECOLOR', name: 'True color'},
-    {id: 'NDVI', name: 'NDVI'},
-    {id: 'FALSECOLOR', name: 'False color'},
+    { id: 'TRUECOLOR', name: 'True color' },
+    { id: 'NDVI', name: 'NDVI' },
+    { id: 'FALSECOLOR', name: 'False color' },
   ];
+
   selectedLayer: Layer = this.availableLayers[0];
 
-  constructor(private sanitizer: DomSanitizer) { }
+  constructor(private sanitizer: DomSanitizer, private sentinelService: SentinelService) { }
 
   ngOnInit(): void {
-    this.fetchImage(this.selectedLayer);    
-  }  
-
-  fetchImage(layer: Layer){
-    const wmslayer = this.createWmsLayer(layer.id);
-
-    const bbox = new BBox(CRS_EPSG4326, 14.95, 37.7, 15.05, 37.8);
-    const getMapParams = {
-      bbox: bbox,
-      fromTime: this.startDate,
-      toTime: this.endDate,
-      width: 512,
-      height: 512,
-      format: MimeTypes.JPEG,
-    };
-
-    this.imageUrl = wmslayer.getMapUrl(getMapParams, ApiType.WMS);
+    this.fetchImage();
   }
 
-  createWmsLayer(layerId: string): WmsLayer{
-    return new WmsLayer({
-      baseUrl: 'https://services.sentinel-hub.com/ogc/wms/8fabe20c-9448-4608-b7f7-57ee3bdc785b',
-      layerId: layerId,
-    });
+  fetchImage() {
+    this.imageUrl = this.sentinelService.fetchImage(this.selectedLayer, this.startDate, this.endDate);
   }
 
-  handleLayerChange(layer: Layer){
-    this.selectedLayer = layer;
-    this.fetchImage(this.selectedLayer);
+  layerChange(event: MatButtonToggleChange) {
+    this.selectedLayer = event.value as Layer;
+    this.fetchImage();
   }
 
-  startChange(event: MatDatepickerInputEvent<Date>)
-  {
-    this.startDate = <Date>event.value;    
-    this.fetchImage(this.selectedLayer);
+  startChange(event: MatDatepickerInputEvent<Date>) {    
+    this.startDate = <Date>event.value;
+    this.fetchImage();
   }
 
-  endChange(event:MatDatepickerInputEvent<Date>)
-  {
+  endChange(event: MatDatepickerInputEvent<Date>) {    
     this.endDate = <Date>event.value;
-    this.fetchImage(this.selectedLayer);
+    this.fetchImage();
   }
-  
+
+  // Removes the unsafe: prefix from the URL
   sanitize(url: string) {
     return this.sanitizer.bypassSecurityTrustUrl(url);
   }
