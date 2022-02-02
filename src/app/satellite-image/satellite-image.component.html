@@ -1,32 +1,58 @@
-<section class="py-5">
-    <div class="container px-4 px-lg-5 my-5">
-        <div class="row align-items-center">
-            <div class="col-md-6">
-                <img class="card-img-top mb-5 mb-md-0" [src]="sanitize(imageUrl)" />
+<div class="container px-4 px-lg-5 my-5">
+    <div class="row">
+        <div class="col">
+            <div class="d-flex justify-content-center">
+                <mat-card class="sat-card">
+                    <mat-card-header>
+                        <div mat-card-avatar class="example-header-image"></div>
+                        <mat-card-title>Mount Etna</mat-card-title>
+                        <mat-card-subtitle>Sicily, Italy</mat-card-subtitle>
+                    </mat-card-header>
+                    <img class="card-img-top mb-5 mb-md-0" [src]="sanitize(imageUrl)" />
+                    <mat-card-content>
+                        <div class="containers">     
+                            <div class="row">
+                                <div class="col">
+                                    <div class="card-params d-flex justify-content-center">
+                                    <mat-form-field appearance="fill">
+                                        <mat-label>Start date</mat-label>
+                                        <input [value]="startDate" matInput [matDatepicker]="startPicker"
+                                            (dateChange)="startChange($event)">
+                                        <mat-datepicker-toggle matSuffix [for]="startPicker">
+                                        </mat-datepicker-toggle>
+                                        <mat-datepicker #startPicker></mat-datepicker>
+                                    </mat-form-field>
+                                </div>
+                                </div>
+                                <div class="col">
+                                    <div class="card-params d-flex justify-content-center">
+                                    <mat-form-field appearance="fill">
+                                        <mat-label>End date</mat-label>
+                                        <input [value]="endDate" matInput [matDatepicker]="endPicker"
+                                            (dateChange)="endChange($event)">
+                                        <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+                                        <mat-datepicker #endPicker></mat-datepicker>
+                                    </mat-form-field>
+                                    </div>                                
+                                </div>
+                            </div>
+                            <div class="row">                                
+                                <div class="col">
+                                    <div class="card-params d-flex justify-content-center">                                        
+                                            <mat-button-toggle-group name="fontStyle" aria-label="Font Style">
+                                                <mat-button-toggle *ngFor="let layer of availableLayers" 
+                                                    [value]="layer" 
+                                                    (change)="layerChange($event)"
+                                                    [checked]="layer.id === selectedLayer.id">
+                                                {{layer.name}}</mat-button-toggle>                                                
+                                              </mat-button-toggle-group>                                            
+                                    </div>                                    
+                                </div>                                
+                            </div>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
             </div>
-            <div class="col-md-6">
-                <h1 class="display-5 fw-bolder">Mount Etna</h1>
-
-                <div *ngFor="let layer of availableLayers">
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="exampleRadios" [id]="layer.id"
-                            [value]="layer.id" [checked]="layer.id === 'TRUECOLOR'" (change)="handleLayerChange(layer)">
-                        <label class="form-check-label" [for]="layer.id">
-                            {{layer.name}}
-                        </label>
-                    </div>
-                </div>       
-                
-                <mat-form-field appearance="fill">
-                    <mat-label>Enter a date range</mat-label>
-                    <mat-date-range-input [rangePicker]="picker" >
-                      <input [value]="startDate" matStartDate placeholder="Start date" (dateChange)="startChange($event)">
-                      <input [value]="endDate" matEndDate placeholder="End date" (dateChange)="endChange($event)">
-                    </mat-date-range-input>
-                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                    <mat-date-range-picker #picker></mat-date-range-picker>                                      
-                  </mat-form-field>                                                      
-            </div>                        
         </div>
     </div>
-</section>
+</div>
