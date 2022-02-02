@@ -7,25 +7,26 @@
             <div class="col-md-6">
                 <h1 class="display-5 fw-bolder">Mount Etna</h1>
 
-                <div *ngFor="let layer of layersArray">
+                <div *ngFor="let layer of availableLayers">
                     <div class="form-check">
                         <input class="form-check-input" type="radio" name="exampleRadios" [id]="layer.id"
-                            [value]="layer.id" [checked]="layer.id === 'TRUECOLOR'" (change)="handleChange(layer)">
+                            [value]="layer.id" [checked]="layer.id === 'TRUECOLOR'" (change)="handleLayerChange(layer)">
                         <label class="form-check-label" [for]="layer.id">
                             {{layer.name}}
                         </label>
                     </div>
-                </div>                
-            </div>
-
-            <div class="d-flex">
-                <input class="form-control text-center me-3" id="inputQuantity" type="num" value="1"
-                    style="max-width: 3rem">
-                <button class="btn btn-outline-dark flex-shrink-0" type="button">
-                    <i class="bi-cart-fill me-1"></i>
-                    Add to cart
-                </button>
-            </div>
+                </div>       
+                
+                <mat-form-field appearance="fill">
+                    <mat-label>Enter a date range</mat-label>
+                    <mat-date-range-input [rangePicker]="picker" >
+                      <input [value]="startDate" matStartDate placeholder="Start date" (dateChange)="startChange($event)">
+                      <input [value]="endDate" matEndDate placeholder="End date" (dateChange)="endChange($event)">
+                    </mat-date-range-input>
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-date-range-picker #picker></mat-date-range-picker>                                      
+                  </mat-form-field>                                                      
+            </div>                        
         </div>
     </div>
 </section>
