@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { WmsLayer, BBox, CRS_EPSG4326, MimeTypes, ApiType } from '@sentinel-hub/sentinelhub-js';
-import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 
 @Component({
@@ -12,13 +12,21 @@ export class AppComponent {
   title = 'sentinel-angular';
   imageUrl: string = '';
 
-  constructor(private sanitizer:DomSanitizer){}
+  constructor(private sanitizer: DomSanitizer) { }
 
-  ngOnInit(){
+  ngOnInit() {
+    this.getMapParams();    
+  }
+  
+  sanitize(url: string) {
+    return this.sanitizer.bypassSecurityTrustUrl(url);
+  }
+
+  getMapParams(){
     const layer = new WmsLayer({
       baseUrl: 'https://services.sentinel-hub.com/ogc/wms/8fabe20c-9448-4608-b7f7-57ee3bdc785b',
       layerId: 'TRUECOLOR',
-    });  
+    });
 
     const bbox = new BBox(CRS_EPSG4326, 14.95, 37.7, 15.05, 37.8);
     const getMapParams = {
@@ -29,11 +37,7 @@ export class AppComponent {
       height: 512,
       format: MimeTypes.JPEG,
     };
-    
-    this.imageUrl = layer.getMapUrl(getMapParams, ApiType.WMS);     
-  }
 
-  sanitize(url:string){
-    return this.sanitizer.bypassSecurityTrustUrl(url);
-}
+    this.imageUrl = layer.getMapUrl(getMapParams, ApiType.WMS);
+  }
 }
