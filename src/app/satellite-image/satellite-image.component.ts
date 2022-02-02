@@ -1,30 +1,34 @@
 import { Component, OnInit } from '@angular/core';
-import { WmsLayer, BBox, CRS_EPSG4326, MimeTypes, ApiType } from '@sentinel-hub/sentinelhub-js';
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { WmsLayer, BBox, CRS_EPSG4326, MimeTypes, ApiType, } from '@sentinel-hub/sentinelhub-js';
+import { DomSanitizer } from '@angular/platform-browser';
+import { Layer } from '../Models/Layer';
 
 @Component({
   selector: 'app-satellite-image',
   templateUrl: './satellite-image.component.html',
   styleUrls: ['./satellite-image.component.scss']
 })
+
 export class SatelliteImageComponent implements OnInit {
-  imageUrl: string = '';
-  
+  imageUrl: string = '';   
+  layersArray: Layer[] = [
+    {id: 'TRUECOLOR', name: 'True color'},
+    {id: 'NDVI', name: 'NDVI'},
+    {id: 'FALSECOLOR', name: 'False color'},
+  ];
+
   constructor(private sanitizer: DomSanitizer) { }
 
   ngOnInit(): void {
-    this.getMapParams();    
-  }
+    this.imageUrl = this.getMapUrl(this.layersArray[0]);    
+  }  
 
-  sanitize(url: string) {
-    return this.sanitizer.bypassSecurityTrustUrl(url);
-  }
+  handleChange(layer: Layer){
+    this.imageUrl = this.getMapUrl(layer)
+  }  
 
-  getMapParams(){
-    const layer = new WmsLayer({
-      baseUrl: 'https://services.sentinel-hub.com/ogc/wms/8fabe20c-9448-4608-b7f7-57ee3bdc785b',
-      layerId: 'TRUECOLOR',
-    });
+  getMapUrl(layer: Layer){
+    const wmslayer = this.createWmsLayer(layer.id);
 
     const bbox = new BBox(CRS_EPSG4326, 14.95, 37.7, 15.05, 37.8);
     const getMapParams = {
@@ -36,6 +40,17 @@ export class SatelliteImageComponent implements OnInit {
       format: MimeTypes.JPEG,
     };
 
-    this.imageUrl = layer.getMapUrl(getMapParams, ApiType.WMS);
+    return wmslayer.getMapUrl(getMapParams, ApiType.WMS);
+  }
+
+  createWmsLayer(layerId: string): WmsLayer{
+    return new WmsLayer({
+      baseUrl: 'https://services.sentinel-hub.com/ogc/wms/8fabe20c-9448-4608-b7f7-57ee3bdc785b',
+      layerId: layerId,
+    });
+  }
+
+  sanitize(url: string) {
+    return this.sanitizer.bypassSecurityTrustUrl(url);
   }
 }
